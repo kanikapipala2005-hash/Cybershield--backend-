@@ -76,3 +76,29 @@ def scan_ip(ip: str):
         "abuse_score": data.get("abuseConfidenceScore"),
         "verdict": "MALICIOUS" if data.get("abuseConfidenceScore",0) > 50 else "SAFE"
     }
+def check_threat(url):
+    url = url.lower()
+    
+    if "sbi" in url and ("yono" in url or "reward" in url or "kyc" in url):
+        return {
+            "status": "Critical",
+            "riskScore": 95,
+            "threatType": "SBI YONO Phishing",
+            "advice": "This is a fake SBI site! Never enter your credentials."
+        }
+    
+    if "paytm" in url and "kyc" in url:
+        return {
+            "status": "Dangerous", 
+            "riskScore": 90,
+            "threatType": "Paytm KYC Fraud"
+        }
+    
+    if url.count('.') > 3 or "192.168" in url or url.replace('.','').replace('/','').replace(':','').isdigit():
+        return {
+            "status": "Suspicious",
+            "riskScore": 75,
+            "threatType": "IP Address Host"
+        }
+
+    return {"status": "Safe", "riskScore": 0, "threatType": "No match"}
